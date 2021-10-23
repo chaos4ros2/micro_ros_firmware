@@ -31,8 +31,6 @@ rcl_publisher_t publisher_odometry;
 rcl_publisher_t publisher_attitude;
 // Create publisher 3
 rcl_publisher_t pub_tf;
-// Create publisher 4
-// rcl_publisher_t pub_pose;
 
 static int pitchid, rollid, yawid;
 static int Xid, Yid, Zid;
@@ -95,14 +93,11 @@ void appMain(){
         ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Point32), "/drone/attitude"));
     RCCHECK(rclc_publisher_init_best_effort(&pub_tf, &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, TransformStamped),　"/drone/tf"))
-    // RCCHECK(rclc_publisher_init_best_effort(&pub_pose, &node,
-    //     ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, PoseStamped), "/drone/pose"));
 
     // Init messages
     geometry_msgs__msg__Point32 pose;
     geometry_msgs__msg__Point32 odom;
     geometry_msgs__msg__TransformStamped tf;
-    // geometry_msgs__msg__PoseStamped pose;
 
     static micro_ros_utilities_memory_conf_t conf = {0};
 
@@ -120,12 +115,7 @@ void appMain(){
     success &= micro_ros_utilities_create_message_memory(
         ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, TransformStamped),
         &tf,
-        conf));
-
-    // success &= micro_ros_utilities_create_message_memory(
-    //     ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, PoseStamped),
-    //     &pose,
-    //     conf));
+        conf);
 
     if (!success)
     {
@@ -136,7 +126,6 @@ void appMain(){
     // tf configuration
     tf.child_frame_id = micro_ros_string_utilities_set(tf.child_frame_id, "/base_footprint_drone");
     tf.header.frame_id = micro_ros_string_utilities_set(tf.header.frame_id, "/map");
-    // pose.header.frame_id = micro_ros_string_utilities_set(pose.header.frame_id, "/map");
 
     // Get quaternion
     qxid = logGetVarId("stateEstimate", "qx");
@@ -184,14 +173,9 @@ void appMain(){
         tf.transform.translation.y = posY;
         tf.transform.translation.z = posZ;
 
-        // pose.pose.position.x = posX;
-        // pose.pose.position.y = posY;
-        // pose.pose.position.z = posZ;
-
         RCSOFTCHECK(rcl_publish( &publisher_attitude, (const void *) &pose, NULL));
         RCSOFTCHECK(rcl_publish( &publisher_odometry, (const void *) &odom, NULL));
         RCSOFTCHECK(rcl_publish( &pub_tf, &tf, NULL));
-        // RCSOFTCHECK(rcl_publish( &pub_pose, &pose, NULL));
 
         vTaskDelay(10/portTICK_RATE_MS);
 	}
