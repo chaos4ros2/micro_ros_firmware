@@ -95,7 +95,7 @@ void appMain(){
 	RCCHECK(rclc_publisher_init_best_effort(&publisher_attitude, &node,
         ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Point32), "/drone/attitude"));
     RCCHECK(rclc_publisher_init_best_effort(&pub_tf, &node,
-        ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, TransformStamped),　"/drone/tf"))
+        ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, TransformStamped), "/drone/tf"))
 
     // Init messages
     geometry_msgs__msg__Point32 pose;
